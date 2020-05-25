@@ -20,6 +20,30 @@ using std::vector;
 vector<int> BuildSuffixArray(const string& text) {
   vector<int> result;
   // Implement this function yourself
+
+  int text_length = text.length();
+  vector<pair<string, int>> bwt_matrix(text_length);
+  for(int i = 0; i < text_length; i++)
+    bwt_matrix[i].second = i;
+
+
+  // Create all cyclic rotations
+  for(int i = 0; i < text_length; i++)
+  {
+    for(int j = 0; j < text_length; j++)
+    {
+      bwt_matrix[i].first += text[(i + j) % text_length];
+    }
+  }
+
+  // Sort the cyclic rotations lexicographically
+  sort(begin(bwt_matrix), end(bwt_matrix), [](pair<string, int> a, pair<string, int> b){
+    return (a.first < b.first);
+  });
+
+  for(int i = 0; i < text_length; i++)
+    result.push_back(bwt_matrix[i].second);
+
   return result;
 }
 

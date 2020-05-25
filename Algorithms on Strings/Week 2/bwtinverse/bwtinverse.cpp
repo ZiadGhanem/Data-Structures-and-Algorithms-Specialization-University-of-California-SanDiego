@@ -35,53 +35,12 @@ string BWT(const string& text) {
   return result;
 }
 
+
 string InverseBWT(const string& bwt) {
-
-  // write your code here
-  int text_length = bwt.length();
-  string text(text_length, '$');
-
-
-  //The first column of the Burrows-Wheeler matrix is the Burrows-Wheeler transform sorted
-  //Each letter should have a corresponding location so we don't have to recalculate LastToFirst map
-  vector<pair<char, int>> first_column(text_length);
-
-  for(int i = 0; i < text_length; i++)
-  {
-    first_column[i].first = bwt[i];
-    first_column[i].second = i;
-  }
-
-  sort(begin(first_column), end(first_column), [](pair<char, int> a, pair<char, int> b){
-    return (a.first < b.first);
-  });
-
-/*
-  for(auto current: first_column)
-    cout << current.first;
-  cout << endl;
-  for(auto current: first_column)
-    cout << current.second << " ";
-  cout << endl;
-*/
-
-  //Traverse between last and first columns
-  int current_index = first_column[0].second;
-  for(int i = 0; i < text_length; i++)
-  {
-    current_index = first_column[current_index].second;
-    text[i] = first_column[current_index].first;
-  }
-
-  return text;
-
-
-
-/*
   int text_length = bwt.length();
 
   // Original text result
-  string text;
+  string text(text_length, '$');
 
   // First columm of BWT Matrix
   string first_column;
@@ -91,56 +50,48 @@ string InverseBWT(const string& bwt) {
 
   // Number of occurrences of letter for counting sorted
   map<char, int> count;
-  map<char, bool> first_occurrence;
+  // First position at which the letter occurs in the first column
   map<char, int> first_position;
 
   // Counting sort in O(|BWT|) time
 
-  // Get first occurrence of each letter
-  for(int i = 0; i < text_length; i++)
-  {
-    if(!first_occurrence[bwt[i]])
-    {
-      first_occurrence[bwt[i]] = true;
-      first_position[bwt[i]] = i;
-    }
-    count[bwt[i]]++;
-  }
+  // Count numer of each letter
+  for(char letter: bwt)
+    count[letter]++;
 
-  // Create first column
+  // Create first column and get first position of each letter
+  int current_position = 0;
   for(auto it = begin(count); it != end(count); it++)
   {
+    first_position[it->first] = current_position;
     while(it->second > 0)
     {
       first_column += it->first;
       it->second--;
+      current_position++;
     }
   }
 
-  for(char letter: first_column)
+  // Create last to first map
+  for(char letter: bwt)
   {
     last_to_first.push_back(first_position[letter] + count[letter]);
     count[letter]++;
   }
 
-
-  for(int i: last_to_first)
-    cout << i << " ";
-  cout << endl;
-
+  // Last to first traversal
   int current_index = 0;
   for(int i = 0; i < text_length; i++)
   {
-    text += first_column[current_index];
+    text[text_length - i - 1] = first_column[current_index];
     current_index = last_to_first[current_index];
   }
-  reverse(begin(text), end(text));
 
   return text;
-*/
 }
 
 int main() {
+  /*
     srand(time(0));
     char alphabet[4] = {'A', 'C', 'G', 'T'};
 
@@ -165,11 +116,10 @@ int main() {
       }
       cout << endl << endl;
     }
+*/
 
-/*
   string bwt;
   cin >> bwt;
   cout << InverseBWT(bwt) << endl;
   return 0;
-  */
 }
