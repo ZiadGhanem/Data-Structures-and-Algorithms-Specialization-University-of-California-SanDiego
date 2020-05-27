@@ -78,17 +78,6 @@ void PreprocessBWT(const string& bwt,
   */
 }
 
-bool contains_symbol(const string& bwt, char symbol, int top, int bottom)
-{
-  for(int i = top; i <= bottom; i++)
-  {
-    if(bwt[i] == symbol)
-      return true;
-  }
-
-  return false;
-}
-
 // Compute the number of occurrences of string pattern in the text
 // given only Burrows-Wheeler Transform bwt of the text and additional
 // information we get from the preprocessing stage - starts and occ_counts_before.
@@ -107,7 +96,8 @@ int CountOccurrences(const string& pattern,
       char symbol = pattern[pattern_index];
       pattern_index--;
 
-      if(contains_symbol(bwt, symbol, top, bottom))
+      if((occ_count_before.find(symbol) != end(occ_count_before))
+      && (occ_count_before[symbol][bottom + 1] - occ_count_before[symbol][top] > 0))
       {
         top = starts[symbol] + occ_count_before[symbol][top];
         bottom = starts[symbol] + occ_count_before[symbol][bottom + 1] - 1;
